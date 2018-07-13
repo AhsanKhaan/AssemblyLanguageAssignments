@@ -1,0 +1,89 @@
+.MODEL SMALL
+
+.STACK 200h
+
+.DATA
+
+N1 DW 0
+
+N2 DW 1
+
+TEMP DW 0
+
+
+.CODE
+
+
+MAIN PROC
+
+
+MOV AX,@DATA
+
+MOV DS,AX
+
+
+
+CALL INDEC
+
+
+MOV AH,2
+
+MOV DL,13
+
+INT 21h
+
+
+MOV DL,10
+
+INT 21h 
+
+
+MOV AH,0
+
+MOV CX,AX 
+
+
+L1:
+
+
+MOV TEMP,CX    
+
+
+MOV AX,N1
+;AX=0
+ADD AX,N2  ;AX=0+1
+
+MOV BX,N2  ;BX=1
+MOV N1,BX  ;N1=Bx=1
+MOV N2,AX; N2=1
+ 
+CALL OUTDEC
+
+
+MOV AH,2
+
+MOV DL,13
+
+INT 21h
+
+
+MOV DL,10
+
+INT 21h 
+
+
+MOV CX,TEMP
+
+
+LOOP L1
+
+
+MOV AH,4CH
+
+INT 21h
+
+
+MAIN ENDP
+
+END MAIN
+

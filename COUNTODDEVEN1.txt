@@ -1,0 +1,133 @@
+.model small
+.stack 200h
+.data
+arr db 5,1,6,4,8
+EVN DB 0
+E DB "NO. OF EVEN NUMBERS: $"
+O DB 13,10,"NO. OF ODD NUMBERS: $"
+ODD DB 0
+
+.code 
+main proc
+
+MOV AX,@DATA
+MOV DS,AX
+
+MOV SI,0
+                                                  
+L1: 
+
+CMP SI,LENGTHOF ARR 
+JE PRINT
+MOV DX,0
+MOV AH,0
+        
+MOV AL,ARR[SI]
+MOV BL,2
+DIV BX  
+INC SI
+
+CMP DL,0
+JE @EVEN                                           
+
+CMP DL,1
+JE @ODD         
+
+@EVEN:  
+INC EVN 
+JMP L1 
+
+@ODD:
+INC ODD
+JMP L1 
+
+PRINT:
+
+MOV AH,9
+MOV DX,OFFSET E
+INT 21h 
+
+MOV AH,2
+MOV DL,13
+INT 21h
+
+MOV DL,10
+INT 21h                  
+
+MOV AH,0
+MOV AL,EVN
+
+CALL OUTDEC 
+
+MOV AH,9
+MOV DX,OFFSET O 
+INT 21h 
+
+MOV AH,2
+MOV DL,13
+INT 21h
+
+MOV DL,10
+INT 21h
+
+MOV AH,0
+MOV AL,ODD
+
+CALL OUTDEC 
+
+MOV AH,4CH
+INT 21h
+
+main endp
+
+OUTDEC PROC 
+
+PUSH AX
+PUSH BX 
+PUSH DX
+PUSH CX 
+
+MOV CX,0
+MOV BX,10
+
+CMP AX,0
+JGE @ELSE
+
+PUSH AX 
+
+MOV AH,2
+MOV DL,'-'
+INT 21h
+
+POP AX
+NEG  AX 
+@ELSE:
+
+
+MOV DX,0
+MOV  BX,10
+DIV BX 
+PUSH DX 
+INC CX 
+CMP AX,0
+JNZ @ELSE
+
+MOV AH,2
+
+PRINT_LABEL:
+POP DX 
+ADD DL,48
+INT 21h
+
+LOOP PRINT_LABEL 
+POP DX 
+POP CX 
+POP BX 
+POP AX 
+
+RET 
+
+OUTDEC ENDP 
+
+end main
+

@@ -1,0 +1,92 @@
+.model small
+.stack 200h
+.data
+max  DW 0
+arr DW 231,246,324,999,909,124
+.code
+
+main proc
+mov ax,@data
+mov ds,ax
+
+mov si,0
+mov AX,arr[si]
+mov max,aX
+mov cx,LENGTHOF ARR
+ADD SI,2
+
+L1:
+mov AX,arr[si]
+cmp AX,max
+JG @label
+ADD SI,2
+LOOP L1 
+JMP PRINT 
+
+@label:
+MOV max,AX
+ADD SI,2 
+LOOP L1
+
+jmp PRINT
+
+
+PRINT:
+MOV AX,0
+MOV AX,MAX
+CALL OUTDEC 
+
+mov ah,4ch
+int 21h
+
+main endp
+
+OUTDEC PROC 
+
+PUSH AX
+PUSH BX 
+PUSH DX
+PUSH CX 
+
+MOV CX,0
+CMP AX,0
+JGE @ELSE
+
+PUSH AX 
+
+MOV AH,2
+MOV DL,'-'
+INT 21h
+
+POP AX
+NEG  AX 
+@ELSE:
+
+
+MOV DX,0
+MOV  BX,10
+DIV BX 
+PUSH DX 
+INC CX 
+CMP AX,0
+JNZ @ELSE
+
+MOV AH,2
+
+PRINT_LABEL:
+POP DX 
+ADD DL,48
+INT 21h
+
+LOOP PRINT_LABEL 
+POP DX 
+POP CX 
+POP BX 
+POP AX 
+
+RET 
+
+OUTDEC ENDP 
+
+end main
+

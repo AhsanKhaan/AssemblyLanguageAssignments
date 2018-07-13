@@ -1,0 +1,154 @@
+
+
+
+
+
+
+
+
+
+.MODEL small
+.STACK 100h
+.DATA
+
+.CODE
+MAIN PROC
+
+call indec
+
+CMP AX,'0'
+JE @exit
+CMP AX,'1'
+JE @exit
+CMP AX,'2'
+JE @exit
+
+
+CMP AX,'3'
+JGE @count
+JMP @exit
+@count:
+CMP AX,'9'
+JLE @count_body
+JMP @exit
+@count_body:
+MOV BX,AX
+SUB BX,1
+MOV CX,BX
+@INCREMENT:
+
+MUL bX
+
+CMP bX,'1'
+jE @exit
+LOOP @INCREMENT
+
+@exit:
+
+MOV ah,2
+MOV dl,10
+Int 21h
+
+
+CALL OUTDEC
+
+ 
+MOV AH,4CH
+INT 21h
+MAIN ENDP
+
+INDEC PROC
+PUSH BX
+PUSH CX
+PUSH DX
+BEGIN:
+MOV CX,0
+MOV BX,0
+MOV AH,2
+MOV DL,'?'
+INT 21h
+MOV AH,1
+INT 21h
+CMP AL,'-'
+JE MINUS
+CMP AL,'+'
+JE PLUS
+JMP @LOOP
+MINUS:
+MOV CX,1
+PLUS:
+INT 21h
+@LOOP:
+CMP AL,'0'
+JL INVALID
+CMP AL,'9'
+JG INVALID
+SUB AL,48
+MOV AH,0
+PUSH AX
+MOV AX,10
+MUL BX
+POP BX
+ADD BX,AX
+MOV AH,1
+INT 21h
+CMP AL,13
+JNE @LOOP
+MOV AX,BX
+CMP CX,0
+JE EXIT
+NEG AX
+EXIT:
+POP DX
+POP CX
+POP BX
+RET
+INVALID:
+MOV AH,2
+MOV DL,10
+INT 21h
+MOV DL,13
+INT 21h
+JMP BEGIN
+INDEC ENDP
+            ;OUTDEC START
+ OUTDEC PROC
+  PUSH AX
+  PUSH BX
+  PUSH CX
+  PUSH DX
+  
+  MOV CX,0
+  CMP AX,0
+  JGE @ELSE
+  PUSH AX
+  MOV AH,2
+  MOV DL,'-'
+  INT 21h
+  POP AX
+  NEG AX
+  @ELSE:
+  MOV BX,10
+  MOV DX,0
+  DIV BX
+  PUSH DX
+  INC CX
+  CMP AX,0
+  JNZ @ELSE
+  
+  MOV AH,2
+  
+  PRINT_LABEL:
+  POP DX
+  ADD DX,48
+  INT 21h
+  LOOP PRINT_LABEL
+  
+  POP DX
+  POP CX
+  POP BX
+  POP AX
+  
+  RET
+  OUTDEC ENDP
+end main
